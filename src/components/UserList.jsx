@@ -38,7 +38,7 @@ const UserList = () => {
 
             {/* User List */}
             <div className="max-w-2xl mx-auto space-y-3">
-                <AnimatePresence>
+                <AnimatePresence initial={false}>
                     {nearbyUsers.length === 0 ? (
                         <motion.div
                             initial={{ opacity: 0 }}
@@ -53,20 +53,27 @@ const UserList = () => {
                         nearbyUsers.map((u) => (
                             <motion.div
                                 key={u.id}
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, scale: 0.95 }}
+                                layout
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
                                 onClick={() => requestChat(u.id)}
                                 className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between cursor-pointer hover:shadow-md hover:border-blue-200 transition-all active:scale-[0.99] group"
                             >
                                 <div className="flex items-center gap-4">
-                                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-100 to-indigo-100 flex items-center justify-center text-blue-600 font-bold text-lg">
+                                    <div className={`w-12 h-12 rounded-full ${u.isBot ? 'bg-purple-100 text-purple-600 animate-pulse' : 'bg-gradient-to-br from-blue-100 to-indigo-100 text-blue-600'} flex items-center justify-center font-bold text-lg`}>
                                         {u.avatar}
                                     </div>
                                     <div>
-                                        <h3 className="font-semibold text-gray-800 group-hover:text-blue-600 transition-colors">{u.username}</h3>
+                                        <h3 className="font-semibold text-gray-800 group-hover:text-blue-600 transition-colors flex items-center gap-2">
+                                            {u.username}
+                                            {u.isBot && <span className="bg-purple-100 text-purple-700 text-[10px] px-1.5 py-0.5 rounded-full font-bold">AI</span>}
+                                        </h3>
                                         <div className="flex items-center gap-2 text-xs text-gray-500">
-                                            <span className="bg-green-100 text-green-700 px-1.5 py-0.5 rounded-md font-medium">Available</span>
+                                            {u.isBot ? (
+                                                <span className="bg-purple-50 text-purple-700 px-1.5 py-0.5 rounded-md font-medium">✨ AI Chat</span>
+                                            ) : (
+                                                <span className="bg-green-100 text-green-700 px-1.5 py-0.5 rounded-md font-medium">Available</span>
+                                            )}
                                             <span>•</span>
                                             <span>{u.distance < 1000 ? `${u.distance}m` : `${(u.distance / 1000).toFixed(1)}km`} away</span>
                                         </div>

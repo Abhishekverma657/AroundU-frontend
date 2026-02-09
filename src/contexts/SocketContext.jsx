@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { io } from 'socket.io-client';
 
 const SocketContext = createContext();
@@ -50,9 +50,9 @@ export const SocketProvider = ({ children }) => {
             setUser(user);
         });
 
-        newSocket.on('registration_success', ({ user }) => {
+        newSocket.on('profile_updated', ({ user }) => {
             setUser(user);
-            setIsRegistered(true);
+            setIsRegistered(true); // Now we consider registered only after profile is set
             setError(null);
         });
 
@@ -89,8 +89,12 @@ export const SocketProvider = ({ children }) => {
             alert('User rejected your chat request or is busy.');
         });
 
-        newSocket.on('chat_ended', ({ reason }) => {
-            alert('Chat ended: ' + (reason === 'partner_left' ? 'Partner left the chat.' : 'Partner disconnected.'));
+        newSocket.on('chat_ended', ({ reason, autoClose }) => {
+            if (autoClose) {
+                alert('Partner ended the chat.');
+            } else {
+                alert('Chat ended: ' + (reason === 'partner_left' ? 'Partner left the chat.' : 'Partner disconnected.'));
+            }
             leaveRoom();
         });
 
@@ -110,14 +114,27 @@ export const SocketProvider = ({ children }) => {
     const registerLocation = (lat, lon, radius) => {
         if (socket) {
             socket.emit('register_location', { lat, lon, radius });
+            // Note: In new flow, registration success comes after profile update
         }
     };
 
-    const getNearbyUsers = () => {
+    const updateProfile = (username, gender, interest) => {
+        if (socket) {
+            socket.emit('update_profile', { username, gender, interest });
+        }
+    };
+
+    const startMatching = () => {
+        if (socket) {
+            socket.emit('start_matching');
+        }
+    };
+
+    const getNearbyUsers = useCallback(() => {
         if (socket) {
             socket.emit('get_nearby_users');
         }
-    };
+    }, [socket]);
 
     const requestChat = (targetUserId) => {
         if (socket) {
@@ -170,6 +187,8 @@ export const SocketProvider = ({ children }) => {
             isRegistered,
             incomingRequest,
             registerLocation,
+            updateProfile,
+            startMatching,
             getNearbyUsers,
             requestChat,
             respondToChat,
