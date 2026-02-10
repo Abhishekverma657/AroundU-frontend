@@ -1,3 +1,4 @@
+"use client";
 import React, { useState } from 'react';
 import { useSocket } from '../contexts/SocketContext';
 import { motion, AnimatePresence } from 'framer-motion';

@@ -1,8 +1,10 @@
+"use client";
+
 import React from 'react';
-import { SocketProvider, useSocket } from './contexts/SocketContext';
-import LocationRequest from './components/LocationRequest';
-import ChatWindow from './components/ChatWindow';
-import UserList from './components/UserList';
+import { SocketProvider, useSocket } from '../contexts/SocketContext';
+import LocationRequest from '../components/LocationRequest';
+import ChatWindow from '../components/ChatWindow';
+import UserList from '../components/UserList';
 
 const AppContent = () => {
   const { room, isConnected, error, isRegistered, startMatching } = useSocket();

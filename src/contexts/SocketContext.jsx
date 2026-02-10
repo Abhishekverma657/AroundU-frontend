@@ -1,3 +1,4 @@
+"use client";
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { io } from 'socket.io-client';
 
@@ -21,7 +22,7 @@ export const SocketProvider = ({ children }) => {
     useEffect(() => {
         // Connect to backend
         // Use environment variable for production, or fallback to local network logic for dev
-        const backendUrl = import.meta.env.VITE_BACKEND_URL || `http://${window.location.hostname}:5004`;
+        const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || `http://${window.location.hostname}:5004`;
         const newSocket = io(backendUrl, {
             transports: ['websocket'],
             reconnectionAttempts: 5
